@@ -72,7 +72,7 @@ class _SplashScreenState extends State<SplashScreen> {
               child: Container(
                 padding: EdgeInsets.all(16.0),
                 child: Text(
-                  "SeeMe",
+                  "eyeView",
                   style: TextStyle(
                       fontSize: 90.0,
                       fontFamily: 'Pacifico',

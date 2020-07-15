@@ -4,48 +4,61 @@ import 'dart:async';
 import 'dart:math';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:flip_panel/flip_panel.dart';
 
 class Destination {
-  const Destination(this.index, this.title, this.icon, this.color);
+  const Destination(this.index, this.title, this.icon, this.color, this.nav);
   final int index;
   final String title;
   final IconData icon;
   final MaterialColor color;
+  final String nav;
 }
 
 const List<Destination> allDestinations = <Destination>[
-  Destination(0, 'Home', Icons.home, Colors.purple),
-  Destination(1, 'Business', Icons.business, Colors.blue),
-  Destination(2, 'School', Icons.school, Colors.blueGrey),
-  Destination(3, 'Flight', Icons.flight, Colors.indigo)
+  Destination(0, 'Home', Icons.home, Colors.purple, '/home'),
+  Destination(1, 'Business', Icons.business, Colors.blue, '/business'),
+  Destination(2, 'School', Icons.school, Colors.blueGrey, '/school'),
+  Destination(3, 'Flight', Icons.flight, Colors.indigo, '/flight')
 ];
 
-//class RootPage extends StatelessWidget {
-//  const RootPage({ Key key, this.destination }) : super(key: key);
-//
-//  final Destination destination;
-//
-//  @override
-//  Widget build(BuildContext context) {
-//    return Scaffold(
-//      appBar: AppBar(
-//        title: Text(destination.title),
-//        backgroundColor: destination.color,
-//      ),
-//      backgroundColor: destination.color[50],
-//      body: SizedBox.expand(
-//        child: InkWell(
-//          onTap: () {
-//            Navigator.pushNamed(context, "/list");
-//          },
-//          child: Center(
-//            child: Text('tap here'),
-//          ),
-//        ),
-//      ),
-//    );
-//  }
-//}
+final digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+class RootPage extends StatelessWidget {
+
+  const RootPage({ Key key, this.destination }) : super(key: key);
+
+  final Destination destination;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(destination.title),
+        backgroundColor: destination.color,
+      ),
+      backgroundColor: destination.color[50],
+      body: FlipPanel.builder(
+        itemBuilder: (context, index) => Container(
+          color: Colors.black,
+          padding: const EdgeInsets.symmetric(horizontal: 6.0),
+          child: Text(
+            '${digits[index]}',
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 50.0,
+                color: Colors.white),
+          ),
+        ),
+        itemsCount: digits.length,
+        period: const Duration(milliseconds: 1000),
+        loop: 1,
+      )
+    );
+  }
+}
+
+
 
 class MapSample extends StatefulWidget {
   const MapSample({ Key key, this.destination }) : super(key: key);
@@ -93,6 +106,48 @@ class MapSampleState extends State<MapSample> {
     controller.animateCamera(CameraUpdate.newCameraPosition(_kLake));
   }
 }
+
+class HomeView extends StatelessWidget {
+  const HomeView({ Key key, this.destination }) : super(key: key);
+
+  final Destination destination;
+
+  @override
+  Widget build(BuildContext context) {
+    const List<int> shades = <int>[50, 100, 200, 300, 400, 500, 600, 700, 800, 900];
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(destination.title),
+        backgroundColor: destination.color,
+      ),
+      backgroundColor: destination.color[50],
+      body: SizedBox.expand(
+        child: ListView.builder(
+          itemCount: shades.length,
+          itemBuilder: (BuildContext context, int index) {
+            return SizedBox(
+              height: 200,
+              child: Card(
+                color: destination.color[shades[index]].withOpacity(0.25),
+                child: InkWell(
+                  onTap: () {
+                    Navigator.pushNamed(context, destination.nav);
+                  },
+                  child: Center(
+                    child: Text('Item $index', style: Theme.of(context).primaryTextTheme.display1),
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+
 class ListPage extends StatelessWidget {
   const ListPage({ Key key, this.destination }) : super(key: key);
 
@@ -118,7 +173,7 @@ class ListPage extends StatelessWidget {
                 color: destination.color[shades[index]].withOpacity(0.25),
                 child: InkWell(
                   onTap: () {
-                    Navigator.pushNamed(context, "/business");
+                    Navigator.pushNamed(context, destination.nav);
                   },
                   child: Center(
                     child: Text('Item $index', style: Theme.of(context).primaryTextTheme.display1),
@@ -154,10 +209,11 @@ class HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.purple,
         leading: IconButton(
             icon: Icon(FontAwesomeIcons.arrowLeft),
             onPressed: () {
-              //
+              Navigator.pop(context);
             }),
         title: Text("New York"),
         actions: <Widget>[
@@ -460,57 +516,6 @@ Marker newyork3Marker = Marker(
   ),
 );
 
-//class GoogleMap extends StatefulWidget {
-//  const GoogleMap({ Key key, this.destination, CameraPosition initialCameraPosition, MapType mapType, Null Function(GoogleMapController controller) onMapCreated }) : super(key: key);
-//
-//  final Destination destination;
-//  @override
-//  _MyHomePageState createState() => _MyHomePageState();
-//}
-//
-//class _MyHomePageState extends State<GoogleMap> {
-//
-//  GoogleMapController _controller;
-//
-//  final CameraPosition _initialPosition = CameraPosition(target: LatLng(24.903623, 67.198367));
-//
-//  final List<Marker> markers = [];
-//
-//  addMarker(coordinate){
-//
-//    int id = Random().nextInt(100);
-//
-//    setState(() {
-//      markers.add(Marker(position: coordinate, markerId: MarkerId(id.toString())));
-//    });
-//  }
-//
-//  @override
-//  Widget build(BuildContext context) {
-//    return Scaffold(
-//      body: GoogleMap(
-//        initialCameraPosition: _initialPosition,
-//        mapType: MapType.normal,
-////        onMapCreated: (controller){
-////          setState(() {
-////            _controller = controller;
-////          });
-////        },
-////        markers: markers.toSet(),
-////        onTap: (coordinate){
-////          _controller.animateCamera(CameraUpdate.newLatLng(coordinate));
-////          addMarker(coordinate);
-////        },
-//      ),
-//      floatingActionButton: FloatingActionButton(
-//        onPressed: (){
-//          _controller.animateCamera(CameraUpdate.zoomOut());
-//        },
-//        child: Icon(Icons.zoom_out),
-//      ), // This trailing comma makes auto-formatting nicer for build methods.
-//    );
-//  }
-//}
 
 class TextPage extends StatefulWidget {
   const TextPage({ Key key, this.destination }) : super(key: key);
@@ -594,15 +599,15 @@ class _DestinationViewState extends State<DestinationView> {
 //              case '/':
 //                return RootPage(destination: widget.destination);
               case '/':
-                return ListPage(destination: widget.destination);
+                return RootPage(destination: widget.destination);
               case '/home':
-                return ListPage(destination: widget.destination);
+                return HomeView(destination: widget.destination);
               case '/business':
                 return HomePage(destination: widget.destination);
               case '/school':
                 return ListPage(destination: widget.destination);
               case '/flight':
-                return ListPage(destination: widget.destination);
+                return HomePage(destination: widget.destination);
               case '/text':
                 return TextPage(destination: widget.destination);
             }
