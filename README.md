@@ -1,6 +1,6 @@
-# seeme
+# eyeView
 
-See me when you want.
+View from your eyes.
 
 ## Getting Started
 
